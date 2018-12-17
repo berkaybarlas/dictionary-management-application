@@ -1,3 +1,2 @@
 # dictionary-management-application
-
-[design](https://raw.githubusercontent.com/berkaybarlas/dictionary-management-application/blob/master/appScreen.png)
+  <img alt="AppScreen" src="https://raw.githubusercontent.com/berkaybarlas/dictionary-management-application/master/appScreen.png"/>
