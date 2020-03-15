@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './Dictionary.css';
 import Dictionary from './Dictionary'
 import addIcon from "../../assets/add.svg"
@@ -11,7 +11,7 @@ const Dictionaries = (props) => {
             </header>
             <div className="Dictionaries">
                 <div className="dictionary-list">
-                    {props.dictionaries.map(item => (
+                    {props.dictionaries.map((item, i) => (
                         <Dictionary
                             className="dictionary-item"
                             key={item.id}
@@ -33,7 +33,6 @@ const Dictionaries = (props) => {
                 </form>
             </div>
         </div>
-    );
-    
+    );  
 }
 export default Dictionaries;

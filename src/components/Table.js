@@ -15,7 +15,8 @@ class Table extends React.Component {
             dictionaries: [],
             dictionary: '',
             history: { dictionaries: [] },
-            lastDictId: '',
+            selectedDictId: '',
+            selectedDictIndex: -1,
         };
         this.handleDomainChange = this.handleDomainChange.bind(this);
         this.handleRangeChange = this.handleRangeChange.bind(this);
@@ -45,25 +46,35 @@ class Table extends React.Component {
         this.recover();
     }
 
-    handleDomainChange(e) {
-        this.setState({ domain: e.target.value });
+    handleDomainChange(event) {
+        this.setState({ domain: event.target.value });
     }
-    handleRangeChange(e) {
-        this.setState({ range: e.target.value });
+    handleRangeChange(event) {
+        this.setState({ range: event.target.value });
     }
 
-    handleSubmit(e) {
-        e.preventDefault();
-        if (!this.state.domain.length || !this.state.range.length) {
+    handleSubmit(event) {
+        event.preventDefault();
+        const { domain, range, selectedDictIndex, dictionaries, items } = this.state;
+        if (!domain.length || !range.length) {
+            return;
+        }
+        if(selectedDictIndex === -1) {
             return;
         }
         const newItem = {
             id: Date.now(),
-            domain: this.state.domain,
-            range: this.state.range,
+            domain: domain,
+            range: range,
             problemLevel: 0,
         }
+
+        let dictionariesCopy = [...dictionaries];
+        dictionariesCopy[selectedDictIndex].items = [...items, newItem];
+        console.log(dictionariesCopy)
+        //console.log(dictionariesCopy)
         this.setState(state => ({
+            dictionaries: dictionariesCopy,
             items: state.items.concat(newItem),
             domain: '',
             range: '',
@@ -71,13 +82,19 @@ class Table extends React.Component {
 
     }
     remove = (itemId) => {
+        const { items, dictionaries, selectedDictIndex } = this.state;
+
+        let filteredItems = items.filter(item => item.id !== itemId);
+        let dictionariesCopy = [...dictionaries];
+        dictionariesCopy[selectedDictIndex].items = filteredItems;
+
         this.setState(state => ({
-            items: state.items.filter(item => item.id !== itemId)
+            items: filteredItems
         }));
     }
     edit = (itemId, value, type) => {
         const items = this.state.items;
-        const index = items.findIndex((e) => e.id === itemId);
+        const index = items.findIndex((event) => event.id === itemId);
 
         if (index === -1) {
             return;
@@ -92,16 +109,16 @@ class Table extends React.Component {
     validate = () => {
         var Dictionary = {};
 
-        this.state.items.map((e) => {
-            if (Dictionary[e.range] !== undefined) {
-                e.problemLevel = 2;
-            } else if (Dictionary[e.domain] === undefined) {
-                Dictionary[e.domain] = e.range;
-                e.problemLevel = 0;
+        this.state.items.map((item) => {
+            if (Dictionary[item.range] !== undefined) {
+                item.problemLevel = 2;
+            } else if (Dictionary[item.domain] === undefined) {
+                Dictionary[item.domain] = item.range;
+                item.problemLevel = 0;
             } else {
-                e.problemLevel = 1;
+                item.problemLevel = 1;
             }
-            return e;
+            return item;
         });
 
         this.forceUpdate()
@@ -144,7 +161,8 @@ class Table extends React.Component {
             return;
         }
         let newItems = [];
-        if (this.state.lastDictId === '') {
+        let index = this.state.dictionaries.length;
+        if (this.state.selectedDictId === '') {
             newItems = this.state.items;
         }
         const newDictionary = {
@@ -152,35 +170,36 @@ class Table extends React.Component {
             name: this.state.dictionary,
             items: newItems,
         }
-
+        console.log(this.state)
         this.setState(state => ({
             dictionaries: state.dictionaries.concat(newDictionary),
             dictionary: '',
-            lastDictId: newDictionary.id,
+            selectedDictId: newDictionary.id,
+            selectedDictIndex: index,
             items: newItems,
         }), () => {
-            this.onDictionaryClick(newDictionary.id);
             this.saveToStorage();
         });
     }
 
     onDictionaryClick = (dictId) => {
-        const dictionaries = this.state.dictionaries;
-        const index = dictionaries.findIndex((e) => e.id === dictId);
+        const { dictionaries } = this.state;
+        const index = dictionaries.findIndex((dictionary) => dictionary.id === dictId);
 
         if (index === -1) {
             return;
         }
 
         this.setState(state => ({
-            lastDictId: dictId,
+            selectedDictId: dictId,
+            selectedDictIndex: index,
             items: dictionaries[index].items,
-        })); //, () => this.props.change(this.state.dictionaries[index].items, this.state.dictionaries[index].name));
+        }));
     }
 
     updateTable = (dictId, items) => {
         const dictionaries = this.props.dictionaries;
-        const index = dictionaries.findIndex((e) => e.id === dictId);
+        const index = dictionaries.findIndex((event) => event.id === dictId);
 
         if (index === -1) {
             return;
@@ -200,7 +219,7 @@ class Table extends React.Component {
                     change={this.changeDictionary}
                     dictionaries={this.state.dictionaries}
                     dictionary={this.state.dictionary}
-                    lastDictId = {this.state.lastDictId}
+                    selectedDictId = {this.state.selectedDictId}
                     onDictionaryInput = {this.onDictionaryInput}
                     onDictionarySubmit = {this.onDictionarySubmit}
                     onDictionaryClick = {this.onDictionaryClick}

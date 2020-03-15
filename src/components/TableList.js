@@ -2,20 +2,20 @@ import React from "react";
 import "./components.css"
 import LineItem from "./LineItem";
 
-class TableList extends React.Component {
-  render() {
+const TableList = (props) => {
+    if(!props) {
+      return;
+    }
     return (
       <div className="table-list">
-        {this.props.items.map(item => (
+        {props.items.map(item => (
           <LineItem key={item.id}
             item={item}
-            remove={this.props.remove}
-            edit={this.props.edit} />
+            remove={props.remove}
+            edit={props.edit} />
         ))}
       </div>
-
     );
-  }
 }
 
 export default TableList;
