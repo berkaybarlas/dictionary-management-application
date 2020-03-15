@@ -1,4 +1,4 @@
-# Dictionary Mmanagement Application
+# Dictionary Management Application
 
 Simple dictionary Management application. It enables creation of multiple dictionaries. 
 It also validates dictionary and shows vialations such as chains

@@ -10,7 +10,6 @@ class Dictionary extends Component {
     }
 
     handleClick = () => {
-        
         this.props.change(this.props.item.id);
     }
     
@@ -22,10 +21,14 @@ class Dictionary extends Component {
 
         return (
             <div className="Dictionary">
-                <button className="dictionary-button"
+                <button
+                    className="dictionary-button"
                     onClick={this.handleClick}>
-                {this.props.item.name}</button>
-                <Button className="line-button" clickHandler={this.handleRemoveClick}> </Button>
+                    {this.props.item.name}
+                </button>
+                <Button className="line-button" 
+                    clickHandler={this.handleRemoveClick}>                    
+                </Button>
             </div>
         );
     }
